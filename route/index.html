@@ -11,13 +11,13 @@
 </head>
 <body>
 
-<div id="wrap" ng-app="route-example" ng-strict-di>
+<div id="wrap" ng-app="route-example" >
 	<header>
 		<a href="page/1">Page1</a>
 		<a href="page/2">Page2</a>
 		<a href="page/3">Page3</a>
 	</header>
-	<section ng-view>11</section>
+	<section ng-view></section>
 	<footer>footer</footer>
 </div>
 
@@ -28,26 +28,24 @@ var app = angular.module("route-example", ["ngRoute"]);
 app.config(["$locationProvider", "$routeProvider", function($locationProvider, $routeProvider) {
 	$locationProvider.html5Mode(true);
 	$routeProvider
-		.when("/page/1",{
-			templateUrl:"page1.html",
-			controller: function($scope){
+		.when("/page",{
+			templateUrl:function(arg){
+				return 'page'+arg.id+'.html';
+			},
+			resolve: {
+				data: ['$http', function($http) {
+			        return $http.get('data.json').then(
+			            function success(res) { return res.data.name; },
+			            function error(reason) { return false; }
+			        );
+			    }]
+			},
+			controller: function($scope,$location,$routeParams){
+				$location.search("s=hehe")
 				$scope.page = {};
-				$scope.page.name = "page1";
+				$scope.page.name = $routeParams;
 			}
-		})
-		.when("/page/2",{
-			templateUrl:"page2.html",
-			controller: function($scope){
-				$scope.page = {};
-				$scope.page.name = "page2";
-			}
-		})
-		.when("/page/3",{
-			templateUrl:"page3.html",
-			controller: function($scope){
-				$scope.page = {};
-				$scope.page.name = "page3";
-			}
+			
 		})
 }])
 </script>    
